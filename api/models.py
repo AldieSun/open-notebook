@@ -395,6 +395,14 @@ class SourceInsightResponse(BaseModel):
     updated: str
 
 
+class SourceEmbeddingResponse(BaseModel):
+    id: str
+    source_id: str
+    content: str
+    created: str
+    updated: str
+
+
 class SaveAsNoteRequest(BaseModel):
     notebook_id: Optional[str] = Field(None, description="Notebook ID to add note to")
 

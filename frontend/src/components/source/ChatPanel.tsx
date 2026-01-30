@@ -84,7 +84,9 @@ export function ChatPanel({
   const { openModal } = useModalManager()
 
   const handleReferenceClick = (type: string, id: string) => {
-    const modalType = type === 'source_insight' ? 'insight' : type as 'source' | 'note' | 'insight'
+    const modalType = type === 'source_insight' ? 'insight'
+      : type === 'source_embedding' ? 'embedding'
+      : type as 'source' | 'note' | 'insight'
 
     try {
       openModal(modalType, id)

@@ -393,6 +393,7 @@ export const jaJP = {
     viewSource: "ソースを表示",
     noInsightSelected: "インサイトが選択されていません",
     sourceInsight: "ソースインサイト",
+    citedPassage: "引用箇所",
     manageNotebooks: "ノートブックを管理",
     manageNotebooksDesc: "このソースを含むノートブックを管理",
     noNotebooksAvailable: "利用可能なノートブックがありません",

@@ -393,6 +393,7 @@ export const ptBR = {
     viewSource: "Ver Fonte",
     noInsightSelected: "Nenhum insight selecionado",
     sourceInsight: "Insight da Fonte",
+    citedPassage: "Trecho Citado",
     manageNotebooks: "Gerenciar Cadernos",
     manageNotebooksDesc: "Gerencie quais cadernos contêm esta fonte",
     noNotebooksAvailable: "Nenhum caderno disponível",

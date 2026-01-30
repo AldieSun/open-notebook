@@ -358,6 +358,7 @@ export const zhCN = {
     viewSource: "查看来源",
     noInsightSelected: "未选择见解",
     sourceInsight: "来源见解",
+    citedPassage: "引用段落",
     manageNotebooks: "管理所属笔记本",
     manageNotebooksDesc: "管理包含此来源的笔记本",
     noNotebooksAvailable: "暂无可用笔记本",

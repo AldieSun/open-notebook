@@ -358,6 +358,7 @@ export const zhTW = {
     viewSource: "查看來源",
     noInsightSelected: "未選擇見解",
     sourceInsight: "來源見解",
+    citedPassage: "引用段落",
     manageNotebooks: "管理所屬筆記本",
     manageNotebooksDesc: "管理包含此來源的筆記本",
     noNotebooksAvailable: "暫無可用筆記本",

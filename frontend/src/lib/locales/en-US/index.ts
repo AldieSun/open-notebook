@@ -393,6 +393,7 @@ export const enUS = {
     viewSource: "View Source",
     noInsightSelected: "No insight selected",
     sourceInsight: "Source Insight",
+    citedPassage: "Cited Passage",
     manageNotebooks: "Manage Notebooks",
     manageNotebooksDesc: "Manage which notebooks contain this source",
     noNotebooksAvailable: "No notebooks available",
