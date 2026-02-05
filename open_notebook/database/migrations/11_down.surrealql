@@ -1,0 +1,2 @@
+-- Rollback migration 11: Remove chunk-level vector search function
+REMOVE FUNCTION IF EXISTS fn::vector_search_v2;

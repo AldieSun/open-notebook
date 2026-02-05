@@ -677,3 +677,56 @@ async def vector_search(
         logger.error(f"Error performing vector search: {str(e)}")
         logger.exception(e)
         raise DatabaseOperationError(e)
+
+
+async def vector_search_chunks(
+    keyword: str,
+    results: int = 10,
+    source: bool = True,
+    note: bool = True,
+    minimum_score: float = 0.2,
+) -> list:
+    """
+    Chunk-level vector search for precise citations.
+    Returns individual chunks without aggregating to source level.
+
+    Unlike vector_search(), this function:
+    - Returns source_embedding records directly (not grouped by source)
+    - Includes chunk_order for paragraph numbering
+    - Provides source_title for display in citations
+
+    Args:
+        keyword: Search query text
+        results: Maximum number of results to return
+        source: Whether to search source embeddings
+        note: Whether to search notes
+        minimum_score: Minimum similarity score threshold
+
+    Returns:
+        List of chunk results with id, source_id, source_title, content, chunk_order, similarity
+    """
+    if not keyword:
+        raise InvalidInputError("Search keyword cannot be empty")
+    try:
+        from open_notebook.utils.embedding import generate_embedding
+
+        embed = await generate_embedding(keyword)
+        search_results = await repo_query(
+            """
+            SELECT * FROM fn::vector_search_v2($embed, $results, $source, $note, $minimum_score);
+            """,
+            {
+                "embed": embed,
+                "results": results,
+                "source": source,
+                "note": note,
+                "minimum_score": minimum_score,
+            },
+        )
+        if search_results and len(search_results) > 0:
+            return search_results[0].get("result", [])
+        return []
+    except Exception as e:
+        logger.error(f"Error performing chunk-level vector search: {str(e)}")
+        logger.exception(e)
+        raise DatabaseOperationError(e)

@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 from typing_extensions import TypedDict
 
 from open_notebook.ai.provision import provision_langchain_model
-from open_notebook.domain.notebook import vector_search
+from open_notebook.domain.notebook import vector_search, vector_search_chunks
 from open_notebook.utils import clean_thinking_content
 
 
@@ -92,15 +92,12 @@ async def trigger_queries(state: ThreadState, config: RunnableConfig):
 
 async def provide_answer(state: SubGraphState, config: RunnableConfig) -> dict:
     payload = state
-    # if state["type"] == "text":
-    #     results = text_search(state["term"], 10, True, True)
-    # else:
-    results = await vector_search(state["term"], 10, True, True)
+    # Use chunk-level search for precise citations
+    results = await vector_search_chunks(state["term"], 10, True, True)
     if len(results) == 0:
         return {"answers": []}
+    # Pass chunk-level results directly to template for numbered citations
     payload["results"] = results
-    ids = [r["id"] for r in results]
-    payload["ids"] = ids
     system_prompt = Prompter(prompt_template="ask/query_process").render(data=payload)  # type: ignore[arg-type]
     model = await provision_langchain_model(
         system_prompt,
