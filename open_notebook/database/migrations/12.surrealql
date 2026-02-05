@@ -1,9 +1,10 @@
--- Migration 11: Add chunk-level vector search function for precise citations
--- This function returns individual chunks from original documents only (no insights)
+-- Migration 12: Fix vector_search_v2 to exclude source_insight
+-- This migration forces an update to the function by removing and recreating it
 
--- First remove the old function to ensure it gets updated
+-- Remove the old function first
 REMOVE FUNCTION IF EXISTS fn::vector_search_v2;
 
+-- Recreate with correct logic (no source_insight)
 DEFINE FUNCTION fn::vector_search_v2(
     $query: array<float>,
     $match_count: int,
@@ -11,8 +12,8 @@ DEFINE FUNCTION fn::vector_search_v2(
     $show_notes: bool,
     $min_similarity: float
 ) {
-    -- source_embedding: return chunk-level results from original documents
-    -- Does NOT include source_insight (LLM-generated summaries)
+    -- source_embedding: return chunk-level results from original documents ONLY
+    -- Explicitly does NOT include source_insight (LLM-generated summaries)
     let $source_embedding_search =
         IF $sources {(
             SELECT
@@ -31,7 +32,7 @@ DEFINE FUNCTION fn::vector_search_v2(
         )}
         ELSE { [] };
 
-    -- note: keep note-level results (user-created notes, not LLM insights)
+    -- note: user-created notes only (NOT source_insight)
     let $note_content_search =
         IF $show_notes {(
             SELECT
@@ -50,10 +51,10 @@ DEFINE FUNCTION fn::vector_search_v2(
         )}
         ELSE { [] };
 
-    -- Combine results (no source_insight included)
+    -- Combine results - NO source_insight included
     let $all_results = array::union($source_embedding_search, $note_content_search);
 
-    -- No GROUP BY, keep each chunk as independent result
+    -- Return individual chunks (no grouping)
     RETURN (
         SELECT id, source_id, source_title, content, chunk_order, similarity
         FROM $all_results

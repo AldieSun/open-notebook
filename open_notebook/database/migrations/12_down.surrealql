@@ -1,0 +1,3 @@
+-- Rollback migration 12: This would restore the old function with source_insight
+-- For safety, we just remove the function entirely on rollback
+REMOVE FUNCTION IF EXISTS fn::vector_search_v2;
