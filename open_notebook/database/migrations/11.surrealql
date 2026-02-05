@@ -1,5 +1,5 @@
 -- Migration 11: Add chunk-level vector search function for precise citations
--- This function returns individual chunks without aggregating to source level
+-- This function returns individual chunks from original documents only (no insights)
 
 DEFINE FUNCTION IF NOT EXISTS fn::vector_search_v2(
     $query: array<float>,
@@ -8,7 +8,8 @@ DEFINE FUNCTION IF NOT EXISTS fn::vector_search_v2(
     $show_notes: bool,
     $min_similarity: float
 ) {
-    -- source_embedding: return chunk-level results (no aggregation to source)
+    -- source_embedding: return chunk-level results from original documents
+    -- Does NOT include source_insight (LLM-generated summaries)
     let $source_embedding_search =
         IF $sources {(
             SELECT
@@ -27,26 +28,7 @@ DEFINE FUNCTION IF NOT EXISTS fn::vector_search_v2(
         )}
         ELSE { [] };
 
-    -- source_insight: keep insight-level results
-    let $source_insight_search =
-        IF $sources {(
-            SELECT
-                id,
-                source.id as source_id,
-                insight_type + ' - ' + source.title as source_title,
-                content,
-                0 as chunk_order,
-                vector::similarity::cosine(embedding, $query) as similarity
-            FROM source_insight
-            WHERE embedding != NONE
-              AND array::len(embedding) = array::len($query)
-              AND vector::similarity::cosine(embedding, $query) >= $min_similarity
-            ORDER BY similarity DESC
-            LIMIT $match_count
-        )}
-        ELSE { [] };
-
-    -- note: keep note-level results
+    -- note: keep note-level results (user-created notes, not LLM insights)
     let $note_content_search =
         IF $show_notes {(
             SELECT
@@ -65,10 +47,8 @@ DEFINE FUNCTION IF NOT EXISTS fn::vector_search_v2(
         )}
         ELSE { [] };
 
-    let $all_results = array::union(
-        array::union($source_embedding_search, $source_insight_search),
-        $note_content_search
-    );
+    -- Combine results (no source_insight included)
+    let $all_results = array::union($source_embedding_search, $note_content_search);
 
     -- No GROUP BY, keep each chunk as independent result
     RETURN (

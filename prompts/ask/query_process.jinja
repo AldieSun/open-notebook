@@ -24,10 +24,10 @@ Based on the user question, the context and the retrieved results, please formul
 
 # AVAILABLE REFERENCE CONTENT
 
-The following content has been retrieved from the user's documents. Use these to answer the question and cite them using numbered references.
+The following content has been retrieved from the user's original documents. Use these to answer the question and cite them using numbered references.
 
 {% for result in results %}
-[{{loop.index}}] {{result.source_title}} (Paragraph {{result.chunk_order + 1}})
+[{{loop.index}}] {{result.source_title}} 第{{result.chunk_order + 1}}段
     "{{result.content[:300]}}{% if result.content|length > 300 %}...{% endif %}"
 
 {% endfor %}
@@ -37,28 +37,32 @@ The following content has been retrieved from the user's documents. Use these to
 ## How to Cite
 Use numbered references like [1], [2] in your answer. If the same source is referenced multiple times, use the same number.
 
-## Reference List
-At the end of your answer, add a horizontal rule (---) followed by a "References:" section listing all cited sources.
+## Reference List Format
+At the end of your answer, add a horizontal rule (---) followed by a "引用:" section. Format each reference as:
+
+[number] filename 第X段
+    "quoted content preview..."
 
 ## Example
 
-User: Can you tell me more about deep learning?
+User: 请告诉我关于深度学习的内容
 
-Assistant: Deep learning is a subset of machine learning that uses neural networks with multiple layers [1]. It enables computers to learn from large amounts of data [2]. The technique has revolutionized many fields including computer vision and natural language processing [1].
+Assistant: 深度学习是机器学习的一个子集，它使用多层神经网络 [1]。这项技术使计算机能够从大量数据中学习 [2]。深度学习已经在计算机视觉和自然语言处理等领域带来了革命性的变化 [1]。
 
 ---
-References:
-[1] Machine Learning Fundamentals (Paragraph 3)
-    "Deep learning is a subset of machine learning that uses multi-layered neural networks..."
-[2] AI Research Paper (Paragraph 7)
-    "Modern deep learning systems can process vast amounts of unstructured data..."
+引用:
+[1] 机器学习基础.pdf 第3段
+    "深度学习是机器学习的一个子集，使用多层神经网络进行特征学习..."
+[2] AI研究论文.pdf 第7段
+    "现代深度学习系统可以处理大量非结构化数据..."
 
 ## Important Rules
 - Only cite content from the AVAILABLE REFERENCE CONTENT section above
 - Use the exact numbering [1], [2], etc. as shown in the reference list
 - The reference list preview should show the first 80 characters of the cited content
-- Do not include any document IDs (like source:xxx) in your response
+- Do not include any document IDs (like source:xxx, source_insight:xxx) in your response
 - If no relevant content is found, answer based on your knowledge without citations
+- Answer in the same language as the user's question
 
 # YOUR ANSWER
 
